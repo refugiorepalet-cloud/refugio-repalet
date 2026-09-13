@@ -16,7 +16,7 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # SEGURIDAD Y CONTRASEÑA ADMIN (Puedes cambiar "repalet2026" por la clave que quieras)
 # -----------------------------------------------------------------------------
-ADMIN_PASSWORD = "repalet2026"
+ADMIN_PASSWORD = "cabañas@6375"
 
 # Inyección Global de CSS para forzar 'notranslate' y alineaciones
 st.markdown(
