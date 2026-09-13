@@ -82,11 +82,11 @@ modo_publico = query_params.get("view") == "public" or query_params.get("modo") 
 # --- VISTA PÚBLICA ---
 # =========================================================================
 if modo_publico:
-    # Estilos limpios y nativos que respetan Light/Dark mode
+    # Estilos del Calendario Público
     st.markdown(
         """
         <style>
-            /* Estilos del Calendario usando variables nativas para soportar Light / Dark mode */
+            /* Contenedor del Calendario */
             .grid-cal { 
                 display: grid; 
                 grid-template-columns: repeat(7, 1fr); 
@@ -96,16 +96,20 @@ if modo_publico:
                 border: 1px solid var(--border-color, #CCCCCC);
                 background-color: var(--background-secondary-color, transparent);
             }
+            
+            /* Días de la semana (Fondo Azul + Texto Blanco) */
             .h-dia { 
                 text-align: center; 
                 font-weight: bold; 
                 padding: 10px; 
                 border-radius: 6px; 
                 font-size: 0.9rem; 
-                border: 1px solid var(--border-color, #CCCCCC);
-                background-color: var(--secondary-background-color, #F1F5F9);
-                color: var(--text-color, inherit);
+                background-color: #1E3A8A !important;
+                color: #FFFFFF !important;
+                border: none;
             }
+
+            /* Celdas de los días numéricos */
             .c-dia { 
                 aspect-ratio: 1; 
                 display: flex; 
@@ -117,13 +121,13 @@ if modo_publico:
                 border: 1px solid var(--border-color, #E5E7EB);
             }
 
-            /* Estado Disponible: Respeta el color de texto del tema actual */
+            /* Estado Disponible */
             .disp { 
                 background: transparent; 
                 color: var(--text-color, inherit); 
             }
 
-            /* Estados Ocupados (Colores corporativos de cabañas) */
+            /* Estados Ocupados */
             .cb1 { background: #728C11 !important; color: #FFFFFF !important; border-color: #728C11 !important; }
             .cb2 { background: #3D9DD9 !important; color: #FFFFFF !important; border-color: #3D9DD9 !important; }
             .amb { 
@@ -232,8 +236,8 @@ if modo_publico:
             f"""
             <div style="text-align: center;">
                 <a href="{link_whatsapp}" target="_blank" style="text-decoration: none;">
-                    <button style="background-color: #F2D231; color: #000000; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.05rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        📲 Consultar Reserva por WhatsApp
+                    <button style="background-color: #25D366; color: #FFFFFF; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.05rem; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+                        📲 Reserva a través de WhatsApp
                     </button>
                 </a>
             </div>
