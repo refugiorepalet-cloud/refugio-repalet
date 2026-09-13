@@ -79,18 +79,18 @@ query_params = st.query_params
 modo_publico = query_params.get("view") == "public" or query_params.get("modo") == "publico"
 
 # =========================================================================
-# --- VISTA PÚBLICA (FONDO TOTAL BLANCO, SOBRIO Y COMPOSICIÓN ARMONIOSA) ---
+# --- VISTA PÚBLICA (FONDO TOTAL DE LA PÁGINA 10% NEGRO) ---
 # =========================================================================
 if modo_publico:
-    # Estilo global para forzar fondo de la página 100% blanco y limpia lectura
+    # Estilo global para forzar el fondo de la página al 10% negro (#E6E6E6)
     st.markdown(
         """
         <style>
             .stApp {
-                background-color: #FFFFFF !important;
+                background-color: rgba(0, 0, 0, 0.1) !important;
             }
             header {
-                background-color: #FFFFFF !important;
+                background-color: rgba(0, 0, 0, 0.1) !important;
             }
         </style>
         """,
@@ -147,10 +147,10 @@ if modo_publico:
                         ocupacion_calendario[curr.day][cab_nombre] = True
                 curr += timedelta(days=1)
 
-    st.markdown("<hr style='border: none; border-top: 1px solid #E5E7EB; margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: none; border-top: 1px solid #CBD5E1; margin: 20px 0;'>", unsafe_allow_html=True)
     st.markdown(f"<h3 style='color: #111827;'>📅 Disponibilidad - {mes_sel} {anio_sel}</h3>", unsafe_allow_html=True)
 
-    # Leyenda pública con paleta oficial (Verde 728C11 / Azul 3D9DD9 / Amarillo F2D231 / Blanco / Gris / Negro)
+    # Leyenda pública
     st.markdown(
         f"""
         <div class="notranslate" translate="no" style="display: flex; gap: 18px; font-size: 0.9rem; margin-bottom: 15px; color: #374151; font-weight: 500;">
@@ -166,8 +166,8 @@ if modo_publico:
     # Estilos CSS del Calendario Público
     cal_html = """
     <style>
-        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #FFFFFF; padding: 12px; border-radius: 8px; border: 1px solid #E5E7EB; }
-        .h-dia { text-align: center; font-weight: bold; background: #F8FAFC; color: #1E293B; padding: 10px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #E2E8F0; }
+        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #FFFFFF; padding: 12px; border-radius: 8px; border: 1px solid #CBD5E1; }
+        .h-dia { text-align: center; font-weight: bold; background: #F1F5F9; color: #1E293B; padding: 10px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #E2E8F0; }
         .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.05rem; border: 1px solid #E5E7EB; }
         .disp { background: #FFFFFF; color: #374151; }                      /* Blanco con número oscuro */
         .cb1 { background: #728C11; color: #FFFFFF; border-color: #728C11; } /* Verde Colibrí */
@@ -378,6 +378,7 @@ with col_der:
                 row_cliente = f"~~{r['Cliente']}~~"
                 v_bruto, v_comision, v_base, v_iva, v_neto = 0, 0, 0, 0, 0
             else:
+                # Asignación de esferas según la cabaña asignada:
                 marca_estado = "🟢 " if r["Cabaña"] == CABANA_1 else "🔵 "
                 row_cliente = r["Cliente"]
                 v_bruto = r["Ing. Bruto"]
@@ -477,7 +478,6 @@ with col_der:
     st.markdown("---")
     st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
     
-    # Puntitos del calendario admin actualizados para alinearse con los nuevos colores (#728C11 y #3D9DD9)
     st.markdown(
         f"""
         <div class="notranslate" translate="no" style="display: flex; gap: 15px; font-size: 0.85rem; margin-bottom: 10px;">
