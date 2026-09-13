@@ -9,7 +9,7 @@ st.set_page_config(page_title="Refugio Repalet - Gestión y Reservas", page_icon
 # CONFIGURACIÓN Y SEGURIDAD
 # ---------------------------------------------------------
 # Reemplaza 'repalet2026' por la contraseña que tú desees usar
-ADMIN_PASSWORD = "repalet2026" 
+ADMIN_PASSWORD = "crog@6375" 
 
 # Verificar parámetro de URL
 query_params = st.query_params
