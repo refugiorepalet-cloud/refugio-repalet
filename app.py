@@ -29,7 +29,7 @@ st.markdown(
 ARCHIVO_DATOS = "reservas.json"
 
 # =========================================================================
-# 📱 INGRESA AQUÍ TU NÚMERO DE WHATSAPP (Código de país + 9 dígitos)
+# 📱 NÚMERO DE WHATSAPP (Código de país + 9 dígitos)
 # =========================================================================
 NUMERO_WHATSAPP = "56982067917" 
 
@@ -82,56 +82,55 @@ modo_publico = query_params.get("view") == "public" or query_params.get("modo") 
 # --- VISTA PÚBLICA ---
 # =========================================================================
 if modo_publico:
+    # Estilos limpios y nativos que respetan Light/Dark mode
     st.markdown(
         """
         <style>
-            /* 1. Forzar esquema claro general */
-            :root {
-                color-scheme: light !important;
+            /* Estilos del Calendario usando variables nativas para soportar Light / Dark mode */
+            .grid-cal { 
+                display: grid; 
+                grid-template-columns: repeat(7, 1fr); 
+                gap: 6px; 
+                padding: 12px; 
+                border-radius: 8px; 
+                border: 1px solid var(--border-color, #CCCCCC);
+                background-color: var(--background-secondary-color, transparent);
             }
-            
-            /* Fondo principal 10% negro (#E6E6E6) y texto oscuro */
-            .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main, section[data-testid="stSidebar"] {
-                background-color: #E6E6E6 !important;
-                color: #111827 !important;
+            .h-dia { 
+                text-align: center; 
+                font-weight: bold; 
+                padding: 10px; 
+                border-radius: 6px; 
+                font-size: 0.9rem; 
+                border: 1px solid var(--border-color, #CCCCCC);
+                background-color: var(--secondary-background-color, #F1F5F9);
+                color: var(--text-color, inherit);
             }
-
-            /* 2. Arreglar Iconos de la esquina superior derecha de Streamlit */
-            [data-testid="stHeader"] *, [data-testid="stToolbar"] * {
-                color: #111827 !important;
-                fill: #111827 !important;
-            }
-
-            /* 3. Estilos del Selector (Selectbox) */
-            div[data-baseweb="select"] {
-                background-color: #FFFFFF !important;
-                border-radius: 8px !important;
-                border: 1px solid #9CA3AF !important;
-            }
-            div[data-baseweb="select"] * {
-                color: #111827 !important;
-                background-color: transparent !important;
-            }
-
-            /* 4. Arreglar Menú Flotante / Desplegable al abrirse */
-            div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
-                background-color: #FFFFFF !important;
-                border: 1px solid #9CA3AF !important;
-                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
-            }
-            ul[role="listbox"] li, div[role="option"] {
-                background-color: #FFFFFF !important;
-                color: #111827 !important;
-            }
-            ul[role="listbox"] li:hover, div[role="option"]:hover,
-            ul[role="listbox"] li[aria-selected="true"], div[role="option"][aria-selected="true"] {
-                background-color: #E5E7EB !important;
-                color: #000000 !important;
+            .c-dia { 
+                aspect-ratio: 1; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                border-radius: 6px; 
+                font-weight: bold; 
+                font-size: 1.05rem; 
+                border: 1px solid var(--border-color, #E5E7EB);
             }
 
-            /* 5. Contraste de etiquetas y textos */
-            label, p, span, h1, h2, h3, h4 {
-                color: #111827 !important;
+            /* Estado Disponible: Respeta el color de texto del tema actual */
+            .disp { 
+                background: transparent; 
+                color: var(--text-color, inherit); 
+            }
+
+            /* Estados Ocupados (Colores corporativos de cabañas) */
+            .cb1 { background: #728C11 !important; color: #FFFFFF !important; border-color: #728C11 !important; }
+            .cb2 { background: #3D9DD9 !important; color: #FFFFFF !important; border-color: #3D9DD9 !important; }
+            .amb { 
+                background: linear-gradient(135deg, #728C11 50%, #3D9DD9 50%) !important; 
+                color: #FFFFFF !important; 
+                border-color: #CBD5E1 !important; 
+                text-shadow: 0px 0px 3px rgba(0,0,0,0.8); 
             }
         </style>
         """,
@@ -139,11 +138,11 @@ if modo_publico:
     )
 
     st.markdown(
-        "<h1 style='text-align: center; color: #111827; font-weight: 700;'>🏡 Refugio Repalet - Disponibilidad y Reservas</h1>",
+        "<h1 style='text-align: center; font-weight: 700;'>🏡 Refugio Repalet - Disponibilidad y Reservas</h1>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<p style='text-align: center; color: #374151; font-size: 1.05rem;'>Consulta la disponibilidad en tiempo real para nuestras cabañas a continuación.</p>",
+        "<p style='text-align: center; font-size: 1.05rem;'>Consulta la disponibilidad en tiempo real para nuestras cabañas a continuación.</p>",
         unsafe_allow_html=True,
     )
 
@@ -188,14 +187,14 @@ if modo_publico:
                         ocupacion_calendario[curr.day][cab_nombre] = True
                 curr += timedelta(days=1)
 
-    st.markdown("<hr style='border: none; border-top: 1px solid #9CA3AF; margin: 20px 0;'>", unsafe_allow_html=True)
-    st.markdown(f"<h3 style='color: #111827;'>📅 Disponibilidad - {mes_sel} {anio_sel}</h3>", unsafe_allow_html=True)
+    st.markdown("<hr style='border: none; border-top: 1px solid rgba(128,128,128,0.3); margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"### 📅 Disponibilidad - {mes_sel} {anio_sel}")
 
     # Leyenda pública
     st.markdown(
         f"""
-        <div class="notranslate" translate="no" style="display: flex; gap: 18px; font-size: 0.9rem; margin-bottom: 15px; color: #1F2937; font-weight: 600;">
-            <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:#FFFFFF;width:14px;height:14px;display:inline-block;border-radius:3px;border:1px solid #9CA3AF;"></span> Disponible</div>
+        <div class="notranslate" translate="no" style="display: flex; gap: 18px; font-size: 0.9rem; margin-bottom: 15px; font-weight: 600;">
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:transparent;width:14px;height:14px;display:inline-block;border-radius:3px;border:1px solid currentColor;"></span> Disponible</div>
             <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:#728C11;width:14px;height:14px;display:inline-block;border-radius:3px;"></span> {CABANA_1}</div>
             <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:#3D9DD9;width:14px;height:14px;display:inline-block;border-radius:3px;"></span> {CABANA_2}</div>
             <div style="display: flex; align-items: center; gap: 6px;"><span style="background:linear-gradient(135deg,#728C11 50%,#3D9DD9 50%);width:14px;height:14px;display:inline-block;border-radius:3px;"></span> Ambas Ocupadas</div>
@@ -204,17 +203,8 @@ if modo_publico:
         unsafe_allow_html=True
     )
 
-    # Estilos CSS del Calendario Público
+    # HTML del Calendario
     cal_html = """
-    <style>
-        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #FFFFFF; padding: 12px; border-radius: 8px; border: 1px solid #9CA3AF; }
-        .h-dia { text-align: center; font-weight: bold; background: #F1F5F9; color: #1E293B; padding: 10px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #CBD5E1; }
-        .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.05rem; border: 1px solid #E5E7EB; }
-        .disp { background: #FFFFFF; color: #111827; }                      /* Blanco con número oscuro */
-        .cb1 { background: #728C11; color: #FFFFFF; border-color: #728C11; } /* Verde Colibrí */
-        .cb2 { background: #3D9DD9; color: #FFFFFF; border-color: #3D9DD9; } /* Azul Chercán */
-        .amb { background: linear-gradient(135deg, #728C11 50%, #3D9DD9 50%); color: #FFFFFF; border-color: #CBD5E1; text-shadow: 0px 0px 3px rgba(0,0,0,0.6); }
-    </style>
     <div class="grid-cal notranslate" translate="no">
         <div class="h-dia">Lu</div><div class="h-dia">Ma</div><div class="h-dia">Mi</div>
         <div class="h-dia">Ju</div><div class="h-dia">Vi</div><div class="h-dia">Sá</div><div class="h-dia">Do</div>
@@ -242,7 +232,7 @@ if modo_publico:
             f"""
             <div style="text-align: center;">
                 <a href="{link_whatsapp}" target="_blank" style="text-decoration: none;">
-                    <button style="background-color: #F2D231; color: #000000; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.05rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s;">
+                    <button style="background-color: #F2D231; color: #000000; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.05rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         📲 Consultar Reserva por WhatsApp
                     </button>
                 </a>
@@ -260,7 +250,7 @@ if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 if not st.session_state.autenticado:
-    st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🔒 Acceso Restringido - Refugio Repalet</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🔒 Acceso Restringido - Refugio Repalet</h2>", unsafe_allow_html=True)
     _, col_login, _ = st.columns([1, 1, 1])
     with col_login:
         clave_ingresada = st.text_input("Ingresa la contraseña de administrador:", type="password", key="pwd_login")
@@ -281,7 +271,7 @@ if st.sidebar.button("🔒 Cerrar Sesión", key="btn_logout"):
     st.rerun()
 
 st.markdown(
-    "<h2 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Control Financiero</h2>",
+    "<h2 style='text-align: center;'>🏡 Refugio Repalet - Control Financiero</h2>",
     unsafe_allow_html=True,
 )
 
@@ -480,7 +470,7 @@ with col_der:
         def resaltar_fila_total(row):
             if row["ID"] == "TOTAL":
                 return [
-                    'background-color: rgba(0, 0, 0, 0.05); '
+                    'background-color: rgba(128, 128, 128, 0.15); '
                     'font-weight: bold; '
                     'border-top: 2px solid #cbd5e1;'
                 ] * len(row)
@@ -530,27 +520,27 @@ with col_der:
 
     cal_html = """
     <style>
-        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .h-dia { text-align: center; font-weight: bold; background: #1E3A8A; color: white; padding: 4px; border-radius: 4px; font-size: 0.8rem; }
-        .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 0.9rem; box-shadow: inset 0 0 0 1px #E5E7EB; }
-        .disp { background: #F9FAFB; color: #9CA3AF; }
-        .cb1 { background: #728C11; color: white; }
-        .cb2 { background: #3D9DD9; color: white; }
-        .amb { background: linear-gradient(135deg, #728C11 50%, #3D9DD9 50%); color: white; }
+        .grid-cal-admin { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .h-dia-admin { text-align: center; font-weight: bold; background: #1E3A8A; color: white; padding: 4px; border-radius: 4px; font-size: 0.8rem; }
+        .c-dia-admin { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 0.9rem; box-shadow: inset 0 0 0 1px rgba(128,128,128,0.3); }
+        .disp-admin { background: transparent; opacity: 0.6; }
+        .cb1-admin { background: #728C11; color: white; }
+        .cb2-admin { background: #3D9DD9; color: white; }
+        .amb-admin { background: linear-gradient(135deg, #728C11 50%, #3D9DD9 50%); color: white; }
     </style>
-    <div class="grid-cal notranslate" translate="no">
-        <div class="h-dia">Lu</div><div class="h-dia">Ma</div><div class="h-dia">Mi</div>
-        <div class="h-dia">Ju</div><div class="h-dia">Vi</div><div class="h-dia">Sá</div><div class="h-dia">Do</div>
+    <div class="grid-cal-admin notranslate" translate="no">
+        <div class="h-dia-admin">Lu</div><div class="h-dia-admin">Ma</div><div class="h-dia-admin">Mi</div>
+        <div class="h-dia-admin">Ju</div><div class="h-dia-admin">Vi</div><div class="h-dia-admin">Sá</div><div class="h-dia-admin">Do</div>
     """
     
     primer_dia_sem, _ = calendar.monthrange(anio_sel, mes_num)
     for _ in range(primer_dia_sem):
-        cal_html += '<div class="c-dia" style="box-shadow:none;"></div>'
+        cal_html += '<div class="c-dia-admin" style="box-shadow:none;"></div>'
 
     for d in range(1, dias_en_mes + 1):
         c1, c2 = ocupacion_calendario[d][CABANA_1], ocupacion_calendario[d][CABANA_2]
-        cls = "amb" if c1 and c2 else ("cb1" if c1 else ("cb2" if c2 else "disp"))
-        cal_html += f'<div class="c-dia {cls}">{d}</div>'
+        cls = "amb-admin" if c1 and c2 else ("cb1-admin" if c1 else ("cb2-admin" if c2 else "disp-admin"))
+        cal_html += f'<div class="c-dia-admin {cls}">{d}</div>'
 
     cal_html += "</div>"
     st.markdown(cal_html, unsafe_allow_html=True)
