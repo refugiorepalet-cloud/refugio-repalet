@@ -79,15 +79,30 @@ query_params = st.query_params
 modo_publico = query_params.get("view") == "public" or query_params.get("modo") == "publico"
 
 # =========================================================================
-# --- VISTA PÚBLICA (CALENDARIO PÚBLICO CON FONDO BLANCO Y ALTO CONTRASTE) ---
+# --- VISTA PÚBLICA (FONDO TOTAL BLANCO, SOBRIO Y COMPOSICIÓN ARMONIOSA) ---
 # =========================================================================
 if modo_publico:
+    # Estilo global para forzar fondo de la página 100% blanco y limpia lectura
     st.markdown(
-        "<h1 style='text-align: center; color: #1B4D2E;'>🏡 Refugio Repalet - Disponibilidad y Reservas</h1>",
+        """
+        <style>
+            .stApp {
+                background-color: #FFFFFF !important;
+            }
+            header {
+                background-color: #FFFFFF !important;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        "<h1 style='text-align: center; color: #111827; font-weight: 700;'>🏡 Refugio Repalet - Disponibilidad y Reservas</h1>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<p style='text-align: center; color: #374151;'>Consulta la disponibilidad en tiempo real para nuestras cabañas a continuación.</p>",
+        "<p style='text-align: center; color: #4B5563; font-size: 1.05rem;'>Consulta la disponibilidad en tiempo real para nuestras cabañas a continuación.</p>",
         unsafe_allow_html=True,
     )
 
@@ -132,32 +147,32 @@ if modo_publico:
                         ocupacion_calendario[curr.day][cab_nombre] = True
                 curr += timedelta(days=1)
 
-    st.markdown("---")
-    st.markdown(f"### 📅 Disponibilidad - {mes_sel} {anio_sel}")
+    st.markdown("<hr style='border: none; border-top: 1px solid #E5E7EB; margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: #111827;'>📅 Disponibilidad - {mes_sel} {anio_sel}</h3>", unsafe_allow_html=True)
 
-    # Leyenda pública con la paleta limpia (Verde / Amarillo / Blanco / Negro)
+    # Leyenda pública con paleta oficial (Verde 728C11 / Azul 3D9DD9 / Amarillo F2D231 / Blanco / Gris / Negro)
     st.markdown(
         f"""
-        <div class="notranslate" translate="no" style="display: flex; gap: 15px; font-size: 0.9rem; margin-bottom: 15px;">
-            <div><span style="background-color:#FFFFFF;width:12px;height:12px;display:inline-block;border-radius:2px;border:1px solid #CBD5E1;"></span> Disponible</div>
-            <div><span style="background-color:#1B4D2E;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_1}</div>
-            <div><span style="background-color:#FACC15;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_2}</div>
-            <div><span style="background:linear-gradient(135deg,#1B4D2E 50%,#FACC15 50%);width:12px;height:12px;display:inline-block;border-radius:2px;"></span> Ambas Ocupadas</div>
+        <div class="notranslate" translate="no" style="display: flex; gap: 18px; font-size: 0.9rem; margin-bottom: 15px; color: #374151; font-weight: 500;">
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:#FFFFFF;width:14px;height:14px;display:inline-block;border-radius:3px;border:1px solid #CBD5E1;"></span> Disponible</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:#728C11;width:14px;height:14px;display:inline-block;border-radius:3px;"></span> {CABANA_1}</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="background-color:#3D9DD9;width:14px;height:14px;display:inline-block;border-radius:3px;"></span> {CABANA_2}</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="background:linear-gradient(135deg,#728C11 50%,#3D9DD9 50%);width:14px;height:14px;display:inline-block;border-radius:3px;"></span> Ambas Ocupadas</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Estilos CSS del Calendario Público con fondo blanco y alta legibilidad
+    # Estilos CSS del Calendario Público
     cal_html = """
     <style>
-        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #FFFFFF; padding: 10px; border-radius: 8px; }
-        .h-dia { text-align: center; font-weight: bold; background: #1B4D2E; color: #FFFFFF; padding: 8px; border-radius: 6px; font-size: 0.9rem; }
-        .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.1rem; border: 1px solid #E5E7EB; }
-        .disp { background: #FFFFFF; color: #374151; }                      /* Blanco con texto gris oscuro */
-        .cb1 { background: #1B4D2E; color: #FFFFFF; border-color: #1B4D2E; } /* Verde Bosque con texto blanco */
-        .cb2 { background: #FACC15; color: #1B4D2E; border-color: #FACC15; } /* Amarillo con texto verde oscuro para lectura perfecta */
-        .amb { background: linear-gradient(135deg, #1B4D2E 50%, #FACC15 50%); color: #FFFFFF; text-shadow: 0px 0px 3px rgba(0,0,0,0.8); }
+        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #FFFFFF; padding: 12px; border-radius: 8px; border: 1px solid #E5E7EB; }
+        .h-dia { text-align: center; font-weight: bold; background: #F8FAFC; color: #1E293B; padding: 10px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #E2E8F0; }
+        .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.05rem; border: 1px solid #E5E7EB; }
+        .disp { background: #FFFFFF; color: #374151; }                      /* Blanco con número oscuro */
+        .cb1 { background: #728C11; color: #FFFFFF; border-color: #728C11; } /* Verde Colibrí */
+        .cb2 { background: #3D9DD9; color: #FFFFFF; border-color: #3D9DD9; } /* Azul Chercán */
+        .amb { background: linear-gradient(135deg, #728C11 50%, #3D9DD9 50%); color: #FFFFFF; border-color: #CBD5E1; text-shadow: 0px 0px 3px rgba(0,0,0,0.6); }
     </style>
     <div class="grid-cal notranslate" translate="no">
         <div class="h-dia">Lu</div><div class="h-dia">Ma</div><div class="h-dia">Mi</div>
@@ -186,7 +201,7 @@ if modo_publico:
             f"""
             <div style="text-align: center;">
                 <a href="{link_whatsapp}" target="_blank" style="text-decoration: none;">
-                    <button style="background-color: #25D366; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.05rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <button style="background-color: #F2D231; color: #000000; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.05rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: all 0.2s;">
                         📲 Consultar Reserva por WhatsApp
                     </button>
                 </a>
@@ -217,7 +232,7 @@ if not st.session_state.autenticado:
     st.stop()
 
 # =========================================================================
-# --- PANEL PRIVADO (SIN CAMBIOS) ---
+# --- PANEL PRIVADO ---
 # =========================================================================
 st.sidebar.title("Menú Administrador")
 if st.sidebar.button("🔒 Cerrar Sesión", key="btn_logout"):
@@ -462,12 +477,13 @@ with col_der:
     st.markdown("---")
     st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
     
+    # Puntitos del calendario admin actualizados para alinearse con los nuevos colores (#728C11 y #3D9DD9)
     st.markdown(
         f"""
         <div class="notranslate" translate="no" style="display: flex; gap: 15px; font-size: 0.85rem; margin-bottom: 10px;">
-            <div><span style="background-color:#22C55E;width:10px;height:10px;display:inline-block;border-radius:2px;"></span> {CABANA_1}</div>
-            <div><span style="background-color:#3B82F6;width:10px;height:10px;display:inline-block;border-radius:2px;"></span> {CABANA_2}</div>
-            <div><span style="background:linear-gradient(135deg,#22C55E 50%,#3B82F6 50%);width:10px;height:10px;display:inline-block;border-radius:2px;"></span> Ambas</div>
+            <div><span style="background-color:#728C11;width:10px;height:10px;display:inline-block;border-radius:2px;"></span> {CABANA_1}</div>
+            <div><span style="background-color:#3D9DD9;width:10px;height:10px;display:inline-block;border-radius:2px;"></span> {CABANA_2}</div>
+            <div><span style="background:linear-gradient(135deg,#728C11 50%,#3D9DD9 50%);width:10px;height:10px;display:inline-block;border-radius:2px;"></span> Ambas</div>
         </div>
         """, unsafe_allow_html=True
     )
@@ -478,9 +494,9 @@ with col_der:
         .h-dia { text-align: center; font-weight: bold; background: #1E3A8A; color: white; padding: 4px; border-radius: 4px; font-size: 0.8rem; }
         .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 0.9rem; box-shadow: inset 0 0 0 1px #E5E7EB; }
         .disp { background: #F9FAFB; color: #9CA3AF; }
-        .cb1 { background: #22C55E; color: white; }
-        .cb2 { background: #3B82F6; color: white; }
-        .amb { background: linear-gradient(135deg, #22C55E 50%, #3B82F6 50%); color: white; }
+        .cb1 { background: #728C11; color: white; }
+        .cb2 { background: #3D9DD9; color: white; }
+        .amb { background: linear-gradient(135deg, #728C11 50%, #3D9DD9 50%); color: white; }
     </style>
     <div class="grid-cal notranslate" translate="no">
         <div class="h-dia">Lu</div><div class="h-dia">Ma</div><div class="h-dia">Mi</div>
