@@ -13,16 +13,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# -----------------------------------------------------------------------------
-# SEGURIDAD Y CONTRASEÑA ADMIN (Puedes cambiar "repalet2026" por la clave que quieras)
-# -----------------------------------------------------------------------------
 ADMIN_PASSWORD = "cabañas@6375"
 
-# Inyección Global de CSS para forzar 'notranslate' y alineaciones
 st.markdown(
     """
     <style>
-        /* Desactiva la traducción automática en selectores de Streamlit */
         div[data-baseweb="select"], div[role="listbox"], ul[role="listbox"] {
             translate: no !important;
         }
@@ -32,23 +27,21 @@ st.markdown(
 )
 
 ARCHIVO_DATOS = "reservas.json"
-NUMERO_WHATSAPP = "56912345678"  # Reemplazar con el número de WhatsApp oficial
 
-# Nombres Oficiales de las Cabañas
+# =========================================================================
+# 📱 INGRESA AQUÍ TU NÚMERO DE WHATSAPP (Código de país + 9 dígitos)
+# =========================================================================
+NUMERO_WHATSAPP = "56982067917" 
+
 CABANA_1 = "Cabaña Colibrí"
 CABANA_2 = "Cabaña Chercán"
 
-# Listado oficial de meses (Usamos un espacio no-break/zero-width para evitar 'Mayonesa')
 NOMBRES_MESES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo\u200b", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 
-# =========================================================================
-# --- PERSISTENCIA DE DATOS (LECTURA Y ESCRITURA EN ARCHIVO LOCAL) ---
-# =========================================================================
 def cargar_datos():
-    """Carga los registros desde el archivo JSON si existe."""
     if os.path.exists(ARCHIVO_DATOS):
         try:
             with open(ARCHIVO_DATOS, "r", encoding="utf-8") as f:
@@ -58,7 +51,6 @@ def cargar_datos():
                         r["Cabaña"] = CABANA_1
                     elif r.get("Cabaña") in ["Cabaña 2", "Chercán"]:
                         r["Cabaña"] = CABANA_2
-
                     r["ingreso"] = datetime.strptime(r["ingreso"], "%Y-%m-%d").date()
                     r["salida"] = datetime.strptime(r["salida"], "%Y-%m-%d").date()
                 return datos
@@ -68,7 +60,6 @@ def cargar_datos():
     return []
 
 def guardar_datos():
-    """Guarda st.session_state.registros en el archivo JSON."""
     try:
         registros_para_guardar = []
         for r in st.session_state.registros:
@@ -76,26 +67,23 @@ def guardar_datos():
             r_copy["ingreso"] = r_copy["ingreso"].strftime("%Y-%m-%d")
             r_copy["salida"] = r_copy["salida"].strftime("%Y-%m-%d")
             registros_para_guardar.append(r_copy)
-
         with open(ARCHIVO_DATOS, "w", encoding="utf-8") as f:
             json.dump(registros_para_guardar, f, ensure_ascii=False, indent=4)
     except Exception as e:
         st.error(f"Error al guardar los datos: {e}")
 
-# Inicializar base de datos local desde disco si no existe en sesión
 if "registros" not in st.session_state:
     st.session_state.registros = cargar_datos()
 
-# Detectar parámetro de URL para el modo de visualización pública
 query_params = st.query_params
 modo_publico = query_params.get("view") == "public" or query_params.get("modo") == "publico"
 
 # =========================================================================
-# --- VISTA PÚBLICA (SOLO CALENDARIO Y CONTACTO POR WHATSAPP) ---
+# --- VISTA PÚBLICA (CALENDARIO CON NUEVA PALETA Y WHATSAPP) ---
 # =========================================================================
 if modo_publico:
     st.markdown(
-        "<h1 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Disponibilidad y Reservas</h1>",
+        "<h1 style='text-align: center; color: #1B4D2E;'>🏡 Refugio Repalet - Disponibilidad y Reservas</h1>",
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -103,7 +91,6 @@ if modo_publico:
         unsafe_allow_html=True,
     )
 
-    # Lógica de cálculo dinámico: Mes en curso (0) y 3 meses hacia adelante (+1, +2, +3)
     hoy = datetime.now()
     opciones_meses_pub = []
     
@@ -118,7 +105,6 @@ if modo_publico:
             "anio_num": anio_calculado
         })
 
-    # Selector centrado
     _, col_sel_pub, _ = st.columns([1, 2, 1])
     with col_sel_pub:
         opcion_seleccionada = st.selectbox(
@@ -148,27 +134,30 @@ if modo_publico:
 
     st.markdown("---")
     st.markdown(f"### 📅 Disponibilidad - {mes_sel} {anio_sel}")
+
+    # Leyenda personalizada con la paleta nueva
     st.markdown(
         f"""
         <div class="notranslate" translate="no" style="display: flex; gap: 15px; font-size: 0.9rem; margin-bottom: 15px;">
-            <div><span style="background-color:#F9FAFB;width:12px;height:12px;display:inline-block;border-radius:2px;border:1px solid #D1D5DB;"></span> Disponible</div>
-            <div><span style="background-color:#22C55E;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_1}</div>
-            <div><span style="background-color:#3B82F6;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_2}</div>
-            <div><span style="background:linear-gradient(135deg,#22C55E 50%,#3B82F6 50%);width:12px;height:12px;display:inline-block;border-radius:2px;"></span> Ambas Ocupadas</div>
+            <div><span style="background-color:#FEFBEA;width:12px;height:12px;display:inline-block;border-radius:2px;border:1px solid #CBD5E1;"></span> Disponible</div>
+            <div><span style="background-color:#1B4D2E;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_1}</div>
+            <div><span style="background-color:#FACC15;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_2}</div>
+            <div><span style="background:linear-gradient(135deg,#1B4D2E 50%,#FACC15 50%);width:12px;height:12px;display:inline-block;border-radius:2px;"></span> Ambas Ocupadas</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
+    # Calendario Público con estilo CSS de la nueva paleta
     cal_html = """
     <style>
         .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .h-dia { text-align: center; font-weight: bold; background: #1E3A8A; color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem; }
+        .h-dia { text-align: center; font-weight: bold; background: #1B4D2E; color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem; }
         .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.1rem; box-shadow: inset 0 0 0 1px #E5E7EB; }
-        .disp { background: #F9FAFB; color: #374151; }
-        .cb1 { background: #22C55E; color: white; }
-        .cb2 { background: #3B82F6; color: white; }
-        .amb { background: linear-gradient(135deg, #22C55E 50%, #3B82F6 50%); color: white; }
+        .disp { background: #FEFBEA; color: #2D3748; }
+        .cb1 { background: #1B4D2E; color: white; }
+        .cb2 { background: #FACC15; color: #1B4D2E; }
+        .amb { background: linear-gradient(135deg, #1B4D2E 50%, #FACC15 50%); color: white; }
     </style>
     <div class="grid-cal notranslate" translate="no">
         <div class="h-dia">Lu</div><div class="h-dia">Ma</div><div class="h-dia">Mi</div>
@@ -187,7 +176,6 @@ if modo_publico:
     cal_html += "</div>"
     st.markdown(cal_html, unsafe_allow_html=True)
 
-    # Botón de WhatsApp
     msg_ws = urllib.parse.quote(f"Hola! Me gustaría consultar disponibilidad en Refugio Repalet para {mes_sel} {anio_sel}.")
     link_whatsapp = f"https://wa.me/{NUMERO_WHATSAPP}?text={msg_ws}"
 
@@ -210,7 +198,7 @@ if modo_publico:
     st.stop()
 
 # =========================================================================
-# --- PROTECCIÓN CON CONTRASEÑA PARA EL PANEL PRIVADO ---
+# --- PROTECCIÓN ADMIN ---
 # =========================================================================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -229,7 +217,7 @@ if not st.session_state.autenticado:
     st.stop()
 
 # =========================================================================
-# --- PANEL PRIVADO (ADMINISTRACIÓN Y CONTROL FINANCIERO) ---
+# --- PANEL PRIVADO (SIN MODIFICACIONES) ---
 # =========================================================================
 st.sidebar.title("Menú Administrador")
 if st.sidebar.button("🔒 Cerrar Sesión", key="btn_logout"):
@@ -243,7 +231,6 @@ st.markdown(
 
 st.markdown("### ⚙️ Panel de Control")
 
-# Columnas con componentes nativos de Streamlit para alineación perfecta
 col_mes, col_anio, col_air, col_dir = st.columns(4)
 
 meses = NOMBRES_MESES
@@ -279,9 +266,6 @@ with col_dir:
 
 st.markdown("---")
 
-# =========================================================================
-# --- PANEL INFERIOR: FORMULARIO Y PLANILLA ---
-# =========================================================================
 col_izq, col_der = st.columns(2)
 fecha_base = datetime(anio_sel, mes_num, 1).date()
 
@@ -475,9 +459,6 @@ with col_der:
     else:
         st.info("💡 No hay registros para este mes.")
 
-# =========================================================================
-# --- CALENDARIO (VISTA ADMINISTRADOR) ---
-# =========================================================================
     st.markdown("---")
     st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
     
