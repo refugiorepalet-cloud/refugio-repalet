@@ -85,15 +85,24 @@ if modo_publico:
     st.markdown(
         """
         <style>
+            /* 1. Forzar esquema claro general */
             :root {
                 color-scheme: light !important;
             }
-            .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main {
+            
+            /* Fondo principal 10% negro (#E6E6E6) y texto oscuro */
+            .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main, section[data-testid="stSidebar"] {
                 background-color: #E6E6E6 !important;
                 color: #111827 !important;
             }
 
-            /* Corrección de color y contraste para el Selectbox */
+            /* 2. Arreglar Iconos de la esquina superior derecha de Streamlit */
+            [data-testid="stHeader"] *, [data-testid="stToolbar"] * {
+                color: #111827 !important;
+                fill: #111827 !important;
+            }
+
+            /* 3. Estilos del Selector (Selectbox) */
             div[data-baseweb="select"] {
                 background-color: #FFFFFF !important;
                 border-radius: 8px !important;
@@ -103,20 +112,26 @@ if modo_publico:
                 color: #111827 !important;
                 background-color: transparent !important;
             }
-            ul[role="listbox"], div[role="listbox"] {
+
+            /* 4. Arreglar Menú Flotante / Desplegable al abrirse */
+            div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
                 background-color: #FFFFFF !important;
+                border: 1px solid #9CA3AF !important;
+                box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15) !important;
             }
-            li[role="option"] {
+            ul[role="listbox"] li, div[role="option"] {
+                background-color: #FFFFFF !important;
                 color: #111827 !important;
-                background-color: #FFFFFF !important;
             }
-            li[role="option"]:hover, li[role="option"][aria-selected="true"] {
+            ul[role="listbox"] li:hover, div[role="option"]:hover,
+            ul[role="listbox"] li[aria-selected="true"], div[role="option"][aria-selected="true"] {
                 background-color: #E5E7EB !important;
                 color: #000000 !important;
             }
-            label {
+
+            /* 5. Contraste de etiquetas y textos */
+            label, p, span, h1, h2, h3, h4 {
                 color: #111827 !important;
-                font-weight: bold !important;
             }
         </style>
         """,
