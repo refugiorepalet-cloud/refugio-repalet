@@ -79,7 +79,7 @@ query_params = st.query_params
 modo_publico = query_params.get("view") == "public" or query_params.get("modo") == "publico"
 
 # =========================================================================
-# --- VISTA PÚBLICA (CALENDARIO CON NUEVA PALETA Y WHATSAPP) ---
+# --- VISTA PÚBLICA (CALENDARIO PÚBLICO CON FONDO BLANCO Y ALTO CONTRASTE) ---
 # =========================================================================
 if modo_publico:
     st.markdown(
@@ -87,7 +87,7 @@ if modo_publico:
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<p style='text-align: center; color: #4B5563;'>Consulta la disponibilidad en tiempo real para nuestras cabañas a continuación.</p>",
+        "<p style='text-align: center; color: #374151;'>Consulta la disponibilidad en tiempo real para nuestras cabañas a continuación.</p>",
         unsafe_allow_html=True,
     )
 
@@ -135,11 +135,11 @@ if modo_publico:
     st.markdown("---")
     st.markdown(f"### 📅 Disponibilidad - {mes_sel} {anio_sel}")
 
-    # Leyenda personalizada con la paleta nueva
+    # Leyenda pública con la paleta limpia (Verde / Amarillo / Blanco / Negro)
     st.markdown(
         f"""
         <div class="notranslate" translate="no" style="display: flex; gap: 15px; font-size: 0.9rem; margin-bottom: 15px;">
-            <div><span style="background-color:#FEFBEA;width:12px;height:12px;display:inline-block;border-radius:2px;border:1px solid #CBD5E1;"></span> Disponible</div>
+            <div><span style="background-color:#FFFFFF;width:12px;height:12px;display:inline-block;border-radius:2px;border:1px solid #CBD5E1;"></span> Disponible</div>
             <div><span style="background-color:#1B4D2E;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_1}</div>
             <div><span style="background-color:#FACC15;width:12px;height:12px;display:inline-block;border-radius:2px;"></span> {CABANA_2}</div>
             <div><span style="background:linear-gradient(135deg,#1B4D2E 50%,#FACC15 50%);width:12px;height:12px;display:inline-block;border-radius:2px;"></span> Ambas Ocupadas</div>
@@ -148,16 +148,16 @@ if modo_publico:
         unsafe_allow_html=True
     )
 
-    # Calendario Público con estilo CSS de la nueva paleta
+    # Estilos CSS del Calendario Público con fondo blanco y alta legibilidad
     cal_html = """
     <style>
-        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .h-dia { text-align: center; font-weight: bold; background: #1B4D2E; color: white; padding: 8px; border-radius: 6px; font-size: 0.9rem; }
-        .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.1rem; box-shadow: inset 0 0 0 1px #E5E7EB; }
-        .disp { background: #FEFBEA; color: #2D3748; }
-        .cb1 { background: #1B4D2E; color: white; }
-        .cb2 { background: #FACC15; color: #1B4D2E; }
-        .amb { background: linear-gradient(135deg, #1B4D2E 50%, #FACC15 50%); color: white; }
+        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #FFFFFF; padding: 10px; border-radius: 8px; }
+        .h-dia { text-align: center; font-weight: bold; background: #1B4D2E; color: #FFFFFF; padding: 8px; border-radius: 6px; font-size: 0.9rem; }
+        .c-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 1.1rem; border: 1px solid #E5E7EB; }
+        .disp { background: #FFFFFF; color: #374151; }                      /* Blanco con texto gris oscuro */
+        .cb1 { background: #1B4D2E; color: #FFFFFF; border-color: #1B4D2E; } /* Verde Bosque con texto blanco */
+        .cb2 { background: #FACC15; color: #1B4D2E; border-color: #FACC15; } /* Amarillo con texto verde oscuro para lectura perfecta */
+        .amb { background: linear-gradient(135deg, #1B4D2E 50%, #FACC15 50%); color: #FFFFFF; text-shadow: 0px 0px 3px rgba(0,0,0,0.8); }
     </style>
     <div class="grid-cal notranslate" translate="no">
         <div class="h-dia">Lu</div><div class="h-dia">Ma</div><div class="h-dia">Mi</div>
@@ -166,7 +166,7 @@ if modo_publico:
 
     primer_dia_sem, _ = calendar.monthrange(anio_sel, mes_num)
     for _ in range(primer_dia_sem):
-        cal_html += '<div class="c-dia" style="box-shadow:none;"></div>'
+        cal_html += '<div class="c-dia" style="border:none; background:transparent;"></div>'
 
     for d in range(1, dias_en_mes + 1):
         c1, c2 = ocupacion_calendario[d][CABANA_1], ocupacion_calendario[d][CABANA_2]
@@ -217,7 +217,7 @@ if not st.session_state.autenticado:
     st.stop()
 
 # =========================================================================
-# --- PANEL PRIVADO (SIN MODIFICACIONES) ---
+# --- PANEL PRIVADO (SIN CAMBIOS) ---
 # =========================================================================
 st.sidebar.title("Menú Administrador")
 if st.sidebar.button("🔒 Cerrar Sesión", key="btn_logout"):
