@@ -79,10 +79,9 @@ query_params = st.query_params
 modo_publico = query_params.get("view") == "public" or query_params.get("modo") == "publico"
 
 # =========================================================================
-# --- VISTA PÚBLICA (FONDO TOTAL DE LA PÁGINA 10% NEGRO / GRIS CLARO) ---
+# --- VISTA PÚBLICA ---
 # =========================================================================
 if modo_publico:
-    # Fuerza el esquema de color claro y asigna el fondo gris de 10% negro (#E6E6E6)
     st.markdown(
         """
         <style>
@@ -92,6 +91,32 @@ if modo_publico:
             .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .main {
                 background-color: #E6E6E6 !important;
                 color: #111827 !important;
+            }
+
+            /* Corrección de color y contraste para el Selectbox */
+            div[data-baseweb="select"] {
+                background-color: #FFFFFF !important;
+                border-radius: 8px !important;
+                border: 1px solid #9CA3AF !important;
+            }
+            div[data-baseweb="select"] * {
+                color: #111827 !important;
+                background-color: transparent !important;
+            }
+            ul[role="listbox"], div[role="listbox"] {
+                background-color: #FFFFFF !important;
+            }
+            li[role="option"] {
+                color: #111827 !important;
+                background-color: #FFFFFF !important;
+            }
+            li[role="option"]:hover, li[role="option"][aria-selected="true"] {
+                background-color: #E5E7EB !important;
+                color: #000000 !important;
+            }
+            label {
+                color: #111827 !important;
+                font-weight: bold !important;
             }
         </style>
         """,
