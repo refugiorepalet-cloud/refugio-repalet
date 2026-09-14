@@ -26,7 +26,6 @@ def guardar_en_disco():
 st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Control Financiero</h2>", unsafe_allow_html=True)
 
 # --- CONTROL DE ACCESO (ENLACE DE VISTA O ADMINISTRACIÓN) ---
-# Si en la barra de direcciones el visitante no es administrador, entra en modo consulta
 st.sidebar.markdown("### 🔑 Acceso al Sistema")
 modo_admin = st.sidebar.checkbox("Modo Administrador (Editar)", value=False)
 
@@ -49,8 +48,7 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
-    # CORREGIDO EL ERROR LÓGICO: Lista definida de forma explícita y segura
-    lista_anios = [2025, 2026, 2027, 2028]
+    lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
 mes_num = meses_dict[mes_sel]
@@ -93,7 +91,8 @@ with col_izq:
                     bruto_total = val_directo * noches
                     monto_base_iva = bruto_total
                 else:
-                    bruto_total = val_airbnb * whitespaces = noches
+                    # CORREGIDO: Operación contable limpia sin basura de texto
+                    bruto_total = val_airbnb * noches
                     monto_base_iva = bruto_total * (1 - 0.155)
                     
                 neto_total = monto_base_iva / 1.19
@@ -141,14 +140,12 @@ with col_der:
                 row_cliente = r["Cliente"]
                 v_bruto, v_base, v_iva, v_neto = r["Ing. Bruto"], r["Base IVA"], r["IVA 19%"], r["Neto Real"]
                 
-                # Mapear la ocupación real día por día
                 curr = r["ingreso"]
                 while curr < r["salida"]:
                     if curr.month == mes_num and curr.year == anio_sel:
                         ocupacion_calendario[curr.day][r["Cabaña"]] = True
                     curr += timedelta(days=1)
             
-            # Si es admin ve finanzas, si es cliente ve solo ocupación básica
             if modo_admin:
                 tabla_datos.append({
                     "ID Interno": r["id"], "Huésped": row_cliente, "Alojamiento": marca_estado + r["Cabaña"],
@@ -172,7 +169,7 @@ with col_der:
             id_seleccionado = st.selectbox("Seleccionar Reserva para Modificar:", opciones_id, key="mgmt_select_reserva_final")
             
             if id_seleccionado:
-                id_real = int(id_seleccionado.split(" | ")[0])
+                id_real = int(id_seleccionado.split(" | "))
                 reserva_objeto = next(r for r in st.session_state.registros if r["id"] == id_real)
                 
                 col_b1, col_b2, col_b3 = st.columns(3)
@@ -202,3 +199,8 @@ with col_der:
         with col_m2:
             st.metric("Total Ganancia Neta Real (Caja):", f"${acum_neto:,.0f}")
 
+    # =========================================================================
+    # --- SECCIÓN CALENDARIO EN TABLA HTML ÚNICA ---
+    # =========================================================================
+    st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
+    
