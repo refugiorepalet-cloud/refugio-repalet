@@ -8,17 +8,17 @@ st.set_page_config(page_title="Gestión de Cabañas", layout="wide")
 
 st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Control Financiero Local</h2>", unsafe_allow_html=True)
 
-# Inicializar almacenamiento local原始 persistente en memoria de sesión
+# Inicializar almacenamiento local persistente en memoria de sesión
 if "registros" not in st.session_state:
     st.session_state.registros = []
 
 # =========================================================================
-# --- PANEL SUPERIOR: CONFIGURACIÓN DE TARIFAS Y PANEL DE CONTROL ---
+# --- PANEL SUPERIOR: CONFIGURACIÓN DE TARIFAS Y FILTROS ---
 # =========================================================================
 st.markdown("### ⚙️ Panel de Control")
 col_mes, col_anio, col_air, col_dir = st.columns(4)
 
-# Mayo corregido en su forma ortográfica correcta
+# Lista de meses corregida con "Mayo" de forma correcta
 meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 meses_dict = {m: i+1 for i, m in enumerate(meses)}
 
@@ -26,7 +26,6 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
-    # CORREGIDO EL ERROR LÓGICO: Lista de años explícita y completa con corchetes correctos
     lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
@@ -78,7 +77,6 @@ with col_izq:
             neto_total = monto_base_iva / 1.19
             iva_total = monto_base_iva - neto_total
             
-            # Generar ID basado en milisegundos para estabilidad absoluta
             id_unico = int(datetime.now().timestamp() * 1000)
             
             st.session_state.registros.append({
@@ -175,7 +173,7 @@ with col_der:
         st.metric("Total Ganancia Neta Real (Caja):", f"${acum_neto:,.0f}")
 
     # =========================================================================
-    # --- SECCIÓN CALENDARIO EN TABLA HTML ÚNICA ---
+    # --- SECCIÓN CALENDARIO EN TABLA HTML ÚNICA (ARQUITECTURA LINEAL COMPACTA) ---
     # =========================================================================
     st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
     
@@ -197,10 +195,12 @@ with col_der:
         <tbody>
     """
     
-    # CORREGIDO DEFINITIVAMENTE: Bucle estructurado estándar sin puntos suspensivos
     for semana in cal_matriz:
         html_tabla += "<tr style='height: 65px;'>"
         for dia in semana:
             if dia == 0:
                 html_tabla += "<td style='border: 1px solid #e5e7eb; background-color: #fafafa;'></td>"
             else:
+                c1 = ocupacion_calendario[dia]["Cabaña 1"]
+                c2 = ocupacion_calendario[dia]["Cabaña 2"]
+                
