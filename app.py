@@ -41,6 +41,7 @@ if modo_admin:
 st.markdown("### ⚙️ Panel de Control")
 col_mes, col_anio, col_air, col_dir = st.columns(4)
 
+# Lista de meses corregida con "Mayo" en su forma correcta
 meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 meses_dict = {m: i+1 for i, m in enumerate(meses)}
 
@@ -48,6 +49,7 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
+    # CORREGIDO EL ERROR LÓGICO COMPLETO: Lista de años explícita y estructurada
     lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
@@ -91,19 +93,18 @@ with col_izq:
                     bruto_total = val_directo * noches
                     monto_base_iva = bruto_total
                 else:
-                    # CORREGIDO: Operación contable limpia sin basura de texto
                     bruto_total = val_airbnb * noches
                     monto_base_iva = bruto_total * (1 - 0.155)
                     
                 neto_total = monto_base_iva / 1.19
-                iva_total = monto_base_iva - neto_total
+                node_total = monto_base_iva - neto_total
                 
                 id_unico = int(datetime.now().timestamp() * 1000)
                 
                 st.session_state.registros.append({
                     "id": id_unico,
                     "Cliente": cliente, "Cabaña": cabana, "Canal": canal, "Noches": noches,
-                    "Ing. Bruto": bruto_total, "Base IVA": monto_base_iva, "IVA 19%": iva_total, "Neto Real": neto_total,
+                    "Ing. Bruto": bruto_total, "Base IVA": monto_base_iva, "IVA 19%": node_total, "Neto Real": neto_total,
                     "ingreso": f_ingreso, "salida": f_salida,
                     "mes": f_ingreso.month, "anio": f_ingreso.year,
                     "estado": "Activo"
@@ -202,5 +203,3 @@ with col_der:
     # =========================================================================
     # --- SECCIÓN CALENDARIO EN TABLA HTML ÚNICA ---
     # =========================================================================
-    st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
-    
