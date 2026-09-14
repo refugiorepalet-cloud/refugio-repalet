@@ -8,7 +8,7 @@ st.set_page_config(page_title="Gestión de Cabañas", layout="wide")
 
 st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Control Financiero Local</h2>", unsafe_allow_html=True)
 
-# Inicializar almacenamiento local persistente en memoria de sesión
+# Inicializar almacenamiento local原始 persistente en memoria de sesión
 if "registros" not in st.session_state:
     st.session_state.registros = []
 
@@ -26,6 +26,7 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
+    # CORREGIDO EL ERROR LÓGICO: Lista de años explícita y completa con corchetes correctos
     lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
@@ -143,12 +144,11 @@ with col_der:
         st.dataframe(df, use_container_width=True, hide_index=True, key="planilla_data_view_final")
         
         st.markdown("#### ⚙️ Gestión de Estado Contable")
-        # CORREGIDO EL ERROR DE INGRESO: Separación limpia por barra vertical para evitar colapsos lógicos
         opciones_id = [f"{r['id']} | {r['Cliente']} ({r['Cabaña']})" for r in registros_filtrados]
         id_seleccionado = st.selectbox("Seleccionar Reserva para Modificar:", opciones_id, key="mgmt_select_reserva_final")
         
         if id_seleccionado:
-            id_real = int(id_seleccionado.split(" | ")[0])
+            id_real = int(id_seleccionado.split(" | "))
             reserva_objeto = next(r for r in st.session_state.registros if r["id"] == id_real)
             
             col_b1, col_b2, col_b3 = st.columns(3)
@@ -197,8 +197,8 @@ with col_der:
         <tbody>
     """
     
-    for ... in range(len(cal_matriz)):
-        semana = cal_matriz[...]
+    # CORREGIDO DEFINITIVAMENTE: Bucle estructurado estándar sin puntos suspensivos
+    for semana in cal_matriz:
         html_tabla += "<tr style='height: 65px;'>"
         for dia in semana:
             if dia == 0:
