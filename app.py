@@ -25,6 +25,7 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1)
 
 with col_anio:
+    # CORREGIDO EL ERROR LÓGICO: Lista de años explícita y completa
     lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1)
 
@@ -139,7 +140,7 @@ with col_der:
         id_seleccionado = st.selectbox("Seleccionar Reserva para Modificar Estado:", opciones_id)
         
         if id_seleccionado:
-            id_real = int(id_seleccionado.split(" ")[1])
+            id_real = int(id_seleccionado.split(" "))
             reserva_objeto = next(r for r in st.session_state.registros if r["id"] == id_real)
             
             col_b1, col_b2 = st.columns(2)
@@ -206,6 +207,3 @@ with col_der:
                     celda_style = "border: 1px solid #e5e7eb; background-color: #ffffff; color: #9CA3AF;"
                     esferas_html = "<span style='color: transparent;'>⚪</span>"
                 
-                html_tabla += f"<td style='padding: 6px; {celda_style} font-size: 14px;'>{dia}<br><span style='font-size: 14px; line-height: 20px;'>{esferas_html}</span></td>"
-        html_tabla += "</tr>"
-        
