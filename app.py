@@ -8,35 +8,37 @@ st.set_page_config(page_title="Gestión de Cabañas", layout="wide")
 
 st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Control Financiero Local</h2>", unsafe_allow_html=True)
 
-# Inicializar base de datos local persistente en sesión
+# Inicializar almacenamiento local persistente en memoria de sesión
 if "registros" not in st.session_state:
     st.session_state.registros = []
 
 # =========================================================================
-# --- PANEL SUPERIOR: CONFIGURACIÓN DE TARIFAS Y FILTROS ---
+# --- PANEL SUPERIOR: CONFIGURACIÓN DE TARIFAS Y PANEL DE CONTROL ---
 # =========================================================================
-st.markdown("### ⚙️ Panel de Control Mensual")
+st.markdown("### ⚙️ Panel de Control")
 col_mes, col_anio, col_air, col_dir = st.columns(4)
 
+# Mayo corregido en su forma ortográfica correcta
 meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 meses_dict = {m: i+1 for i, m in enumerate(meses)}
 
 with col_mes:
-    mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1)
+    mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
-    # CORREGIDO EL ERROR LÓGICO: Lista de años explícita y completa
     lista_anios = [2025, 2026, 2027]
-    anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1)
+    anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
 mes_num = meses_dict[mes_sel]
-bloquear = st.checkbox("🔒 Bloquear tarifas fijas para evitar errores de digitación", value=True)
+
+# EL CANDADO: Sistema de bloqueo activo por defecto para proteger tus valores
+bloquear = st.checkbox("🔒 Bloquear tarifas fijas para evitar errores de digitación", value=True, key="ctrl_lock_check_final")
 
 with col_air:
-    val_airbnb = st.number_input("Tarifa Airbnb por Noche ($):", value=76855, disabled=bloquear)
+    val_airbnb = st.number_input("Tarifa Airbnb por Noche ($):", value=76855, disabled=bloquear, key="ctrl_val_air_final")
 
 with col_dir:
-    val_directo = st.number_input("Tarifa Directo por Noche ($):", value=60000, disabled=bloquear)
+    val_directo = st.number_input("Tarifa Directo por Noche ($):", value=60000, disabled=bloquear, key="ctrl_val_dir_final")
 
 st.markdown("---")
 
@@ -49,14 +51,15 @@ fecha_base = datetime(anio_sel, mes_num, 1).date()
 
 with col_izq:
     st.markdown("### 📝 Nueva Reserva")
-    cliente = st.text_input("Nombre Completo del Huésped:")
-    cabana = st.selectbox("Asignar Cabaña:", ["Cabaña 1", "Cabaña 2"])
-    canal = st.selectbox("Canal de Distribución:", ["Cliente Directo", "Airbnb"])
+    cliente = st.text_input("Nombre Completo del Huésped:", key="form_cliente_final")
+    cabana = st.selectbox("Asignar Cabaña:", ["Cabaña 1", "Cabaña 2"], key="form_cabana_final")
+    canal = st.selectbox("Canal de Distribución:", ["Cliente Directo", "Airbnb"], key="form_canal_final")
     
-    f_ingreso = st.date_input("Fecha de Ingreso:", value=fecha_base, format="DD/MM/YYYY", key="ingreso_sync")
-    f_salida = st.date_input("Fecha de Salida:", value=fecha_base + timedelta(days=2), format="DD/MM/YYYY", key="salida_sync")
+    # Formato día/mes/año (DD/MM/YYYY)
+    f_ingreso = st.date_input("Fecha de Ingreso:", value=fecha_base, format="DD/MM/YYYY", key="ingreso_sync_final")
+    f_salida = st.date_input("Fecha de Salida:", value=fecha_base + timedelta(days=2), format="DD/MM/YYYY", key="salida_sync_final")
     
-    if st.button("🚀 Procesar y Registrar Reserva", type="primary", use_container_width=True):
+    if st.button("🚀 Procesar y Registrar Reserva", type="primary", use_container_width=True, key="form_btn_submit_final"):
         noches = (f_salida - f_ingreso).days
         
         if noches < 2:
@@ -74,8 +77,11 @@ with col_izq:
             neto_total = monto_base_iva / 1.19
             iva_total = monto_base_iva - neto_total
             
+            # Generar ID basado en milisegundos para estabilidad absoluta
+            id_unico = int(datetime.now().timestamp() * 1000)
+            
             st.session_state.registros.append({
-                "id": len(st.session_state.registros),
+                "id": id_unico,
                 "Cliente": cliente, "Cabaña": cabana, "Canal": canal, "Noches": noches,
                 "Ing. Bruto": bruto_total, "Base IVA": monto_base_iva, "IVA 19%": iva_total, "Neto Real": neto_total,
                 "ingreso": f_ingreso, "salida": f_salida,
@@ -83,6 +89,7 @@ with col_izq:
                 "estado": "Activo"
             })
             st.success(f"✔️ Registro de {cliente} completado.")
+            st.rerun()
 
 with col_der:
     st.markdown("### 📊 Planilla Mensual de Movimientos")
@@ -116,14 +123,14 @@ with col_der:
                     curr += timedelta(days=1)
             
             tabla_datos.append({
-                "ID": r["id"],
+                "ID Interno": r["id"],
                 "Huésped": row_cliente,
                 "Alojamiento": marca_estado + r["Cabaña"],
                 "Canal": r["Canal"],
                 "Noches": r["Noches"],
                 "Ingreso": check_in_str,
                 "Salida": check_out_str,
-                "Bruto ($)": f"${v_bruto:,.0f}" if r["estado"] == "Activo" else "$0 (Anulado)",
+                "Bruto ($)": f"${v_bruto:,.0f}" if r["estado"] == "Activo" else "$0",
                 "Base IVA ($)": f"${v_base:,.0f}" if r["estado"] == "Activo" else "$0",
                 "IVA 19% ($)": f"${v_iva:,.0f}" if r["estado"] == "Activo" else "$0",
                 "Neto ($)": f"${v_neto:,.0f}" if r["estado"] == "Activo" else "$0"
@@ -133,24 +140,29 @@ with col_der:
             acum_neto += v_neto
             
         df = pd.DataFrame(tabla_datos)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, use_container_width=True, hide_index=True, key="planilla_data_view_final")
         
         st.markdown("#### ⚙️ Gestión de Estado Contable")
-        opciones_id = [f"ID {r['id']} - {r['Cliente']} ({r['Cabaña']})" for r in registros_filtrados]
-        id_seleccionado = st.selectbox("Seleccionar Reserva para Modificar Estado:", opciones_id)
+        # CORREGIDO EL ERROR DE INGRESO: Separación limpia por barra vertical para evitar colapsos lógicos
+        opciones_id = [f"{r['id']} | {r['Cliente']} ({r['Cabaña']})" for r in registros_filtrados]
+        id_seleccionado = st.selectbox("Seleccionar Reserva para Modificar:", opciones_id, key="mgmt_select_reserva_final")
         
         if id_seleccionado:
-            id_real = int(id_seleccionado.split(" "))
+            id_real = int(id_seleccionado.split(" | ")[0])
             reserva_objeto = next(r for r in st.session_state.registros if r["id"] == id_real)
             
-            col_b1, col_b2 = st.columns(2)
+            col_b1, col_b2, col_b3 = st.columns(3)
             with col_b1:
-                if st.button("❌ Anular Reserva Seleccionada", use_container_width=True):
+                if st.button("❌ Anular Reserva", use_container_width=True, key="btn_anular_final"):
                     reserva_objeto["estado"] = "Anulado"
                     st.rerun()
             with col_b2:
-                if st.button("🔄 Reactivar Reserva Seleccionada", use_container_width=True):
+                if st.button("🔄 Reactivar Reserva", use_container_width=True, key="btn_reactivar_final"):
                     reserva_objeto["estado"] = "Activo"
+                    st.rerun()
+            with col_b3:
+                if st.button("🗑️ Eliminar Permanente", use_container_width=True, type="secondary", key="btn_delete_final"):
+                    st.session_state.registros = [r for r in st.session_state.registros if r["id"] != id_real]
                     st.rerun()
     else:
         st.info("Sin registros contables indexados en el periodo seleccionado.")
@@ -185,25 +197,10 @@ with col_der:
         <tbody>
     """
     
-    for semana in cal_matriz:
+    for ... in range(len(cal_matriz)):
+        semana = cal_matriz[...]
         html_tabla += "<tr style='height: 65px;'>"
         for dia in semana:
             if dia == 0:
                 html_tabla += "<td style='border: 1px solid #e5e7eb; background-color: #fafafa;'></td>"
             else:
-                c1 = ocupacion_calendario[dia]["Cabaña 1"]
-                c2 = ocupacion_calendario[dia]["Cabaña 2"]
-                
-                if c1 and c2:
-                    celda_style = "border: 2px solid #eab308; background-color: #fef08a; font-weight: bold; color: #374151;"
-                    esferas_html = "🟢 🔵"
-                elif c1:
-                    celda_style = "border: 1px solid #2e7d32; background-color: #e2f0d9; font-weight: bold; color: #1b5e20;"
-                    esferas_html = "🟢"
-                elif c2:
-                    celda_style = "border: 1px solid #1565c0; background-color: #ddebf7; font-weight: bold; color: #0d47a1;"
-                    esferas_html = "🔵"
-                else:
-                    celda_style = "border: 1px solid #e5e7eb; background-color: #ffffff; color: #9CA3AF;"
-                    esferas_html = "<span style='color: transparent;'>⚪</span>"
-                
