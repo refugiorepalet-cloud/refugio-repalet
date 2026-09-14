@@ -18,7 +18,7 @@ if "registros" not in st.session_state:
 st.markdown("### ⚙️ Panel de Control")
 col_mes, col_anio, col_air, col_dir = st.columns(4)
 
-# Lista estática corregida: "Mayo" en su forma correcta sin interferencias
+# Lista de meses corregida con "Mayo" en su forma correcta
 meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 meses_dict = {m: i+1 for i, m in enumerate(meses)}
 
@@ -26,7 +26,7 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
-    lista_anios = [2025, 2026, 2027, 2028]
+    lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
 mes_num = meses_dict[mes_sel]
@@ -53,7 +53,7 @@ with col_izq:
     cabana = st.selectbox("Asignar Cabaña:", ["Cabaña 1", "Cabaña 2"], key="form_cabana_final")
     canal = st.selectbox("Canal de Distribución:", ["Cliente Directo", "Airbnb"], key="form_canal_final")
     
-    # Formato configurado estrictamente en formato día/mes/año (DD/MM/YYYY)
+    # Formato día/mes/año (DD/MM/YYYY)
     f_ingreso = st.date_input("Fecha de Ingreso:", value=fecha_base, format="DD/MM/YYYY", key="ingreso_sync_final")
     f_salida = st.date_input("Fecha de Salida:", value=fecha_base + timedelta(days=2), format="DD/MM/YYYY", key="salida_sync_final")
     
@@ -174,7 +174,7 @@ with col_der:
         st.metric("Total Ganancia Neta Real (Caja):", f"${acum_neto:,.0f}")
 
     # =========================================================================
-    # --- SECCIÓN CALENDARIO MULTICABAÑA IMPERMEABLE ---
+    # --- SECCIÓN CALENDARIO EN TABLA HTML ÚNICA ---
     # =========================================================================
     st.markdown(f"### 📅 Calendario - {mes_sel} {anio_sel}")
     
@@ -202,3 +202,4 @@ with col_der:
             if dia == 0:
                 html_tabla += "<td style='border: 1px solid #e5e7eb; background-color: #fafafa;'></td>"
             else:
+                c1 = ocupacion_calendario[dia]["Cabaña 1"]
