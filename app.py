@@ -26,6 +26,7 @@ with col_mes:
     mes_sel = st.selectbox("Seleccionar Mes:", meses, index=datetime.now().month - 1, key="ctrl_mes_select_final")
 
 with col_anio:
+    # CORREGIDO: Lista de años explícita y completa para evitar cierres del programa
     lista_anios = [2025, 2026, 2027]
     anio_sel = st.selectbox("Seleccionar Año:", lista_anios, index=1, key="ctrl_anio_select_final")
 
@@ -55,7 +56,7 @@ with col_izq:
     cabana = st.selectbox("Asignar Cabaña:", ["Cabaña 1", "Cabaña 2"], key="form_cabana_final")
     canal = st.selectbox("Canal de Distribución:", ["Cliente Directo", "Airbnb"], key="form_canal_final")
     
-    # Formato día/mes/año (DD/MM/YYYY)
+    # Formato tradicional de día/mes/año (DD/MM/YYYY)
     f_ingreso = st.date_input("Fecha de Ingreso:", value=fecha_base, format="DD/MM/YYYY", key="ingreso_sync_final")
     f_salida = st.date_input("Fecha de Salida:", value=fecha_base + timedelta(days=2), format="DD/MM/YYYY", key="salida_sync_final")
     
@@ -146,7 +147,7 @@ with col_der:
         id_seleccionado = st.selectbox("Seleccionar Reserva para Modificar:", opciones_id, key="mgmt_select_reserva_final")
         
         if id_seleccionado:
-            id_real = int(id_seleccionado.split(" | "))
+            id_real = int(id_seleccionado.split(" | ")[0])
             reserva_objeto = next(r for r in st.session_state.registros if r["id"] == id_real)
             
             col_b1, col_b2, col_b3 = st.columns(3)
