@@ -77,7 +77,7 @@ registros_filtrados = [r for r in st.session_state.registros if r["mes"] == mes_
 acum_iva = 0
 acum_neto = 0
 
-# Diccionario base mensual mapeado meticulosamente para el control diario
+# Diccionario base mensual mapeado para el control diario de ocupación
 ocupacion_calendario = {d: {"Cabaña 1": False, "Cabaña 2": False} for d in range(1, 33)}
 
 # Alimentar matriz de ocupación basándose únicamente en reservas "Activas"
