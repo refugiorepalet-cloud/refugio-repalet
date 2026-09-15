@@ -14,7 +14,7 @@ st.set_page_config(page_title="Refugio Repalet", layout="wide")
 query_params = st.query_params
 es_version_publica = query_params.get("view") == "public"
 
-# Contraseña del panel administrativo (puedes cambiar 'Repalet2026' por la que gustes)
+# Contraseña del panel administrativo
 CONTRASEÑA_CORRECTA = "Repalet2026"
 
 # Inicializar estados de la sesión
@@ -32,7 +32,9 @@ def obtener_ocupacion_mes(mes, anio):
             curr = r["ingreso"]
             while curr < r["salida"]:
                 if curr.month == mes and curr.year == anio:
-                    ocupacion[curr.day][r["Cabaña"]] = True
+                    # Protección por si el mes tiene menos de 31 días
+                    if curr.day in ocupacion:
+                        ocupacion[curr.day][r["Cabaña"]] = True
                 curr += timedelta(days=1)
     return ocupacion
 
@@ -40,7 +42,7 @@ def obtener_ocupacion_mes(mes, anio):
 def renderizar_calendario_html(anio, mes, ocupacion, titulo_mes):
     cal_matriz = calendar.monthcalendar(anio, mes)
     
-    # Cabecera solicitada: Lu-Ma-Mi-Ju-Vi-Sa-Do
+    # Cabecera solicitada de forma abreviada: Lu-Ma-Mi-Ju-Vi-Sa-Do
     html_tabla = f"""
     <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 10px;">
         <h3 style="text-align: center; color: #1E3A8A; font-family: Arial, sans-serif; margin-bottom: 15px;">📅 Calendario de Ocupación - {titulo_mes} {anio}</h3>
@@ -61,16 +63,16 @@ def renderizar_calendario_html(anio, mes, ocupacion, titulo_mes):
     
     for semana in cal_matriz:
         html_tabla += "<tr style='height: 75px;'>"
-        for dia in Array := semana:
+        for dia in semana:
             if dia == 0:
                 html_tabla += "<td style='border: 1px solid #e5e7eb; background-color: #fafafa;'></td>"
             else:
                 c1 = ocupacion[dia]["Cabaña 1"]
                 c2 = ocupacion[dia]["Cabaña 2"]
                 
-                # Definición del estilo de fondo según la ocupación (Colores y División de Módulos)
+                # Definición del estilo de fondo según la ocupación (Módulos Divididos)
                 if c1 and c2:
-                    # Ambas cabañas coinciden: dividimos el módulo en dos mitades perfectas con CSS lineal
+                    # Ambas cabañas coinciden el mismo día: dividimos el fondo en dos mitades perfectas
                     estilo_fondo = "background: linear-gradient(135deg, #DEF7EC 50%, #EBF5FF 50%);"
                 elif c1:
                     # Cabaña 1 activa (Fondo Verde Suave)
@@ -82,8 +84,7 @@ def renderizar_calendario_html(anio, mes, ocupacion, titulo_mes):
                     # Sin ocupación
                     estilo_fondo = "background-color: #ffffff;"
                 
-                # Círculos indicadores internos
-                indicadores = ""
+                # Círculos indicadores internos (Verdes, Azules o Duales)
                 if c1 and c2:
                     indicadores = '<span style="display:inline-block; width:10px; height:10px; background-color:#31C48D; border-radius:50%; margin: 2px;"></span><span style="display:inline-block; width:10px; height:10px; background-color:#3F83F8; border-radius:50%; margin: 2px;"></span>'
                 elif c1:
@@ -93,6 +94,7 @@ def renderizar_calendario_html(anio, mes, ocupacion, titulo_mes):
                 else:
                     indicadores = '<span style="display:inline-block; width:12px; height:12px; background-color:#e5e7eb; border-radius:50%;"></span>'
 
+                # Números pintados en un gris suave (#9ca3af)
                 html_tabla += f"""
                 <td style="border: 1px solid #e5e7eb; {estilo_fondo} vertical-align: middle; padding: 5px;">
                     <div style="font-size: 16px; font-weight: 600; color: #9ca3af; margin-bottom: 4px;">{dia}</div>
@@ -126,7 +128,8 @@ if es_version_publica:
     with col_m_pub:
         mes_sel_pub = st.selectbox("Mes:", meses, index=datetime.now().month - 1, key="pub_mes")
     with col_a_pub:
-        anio_sel_pub = st.selectbox("Año:", [2025, 2026, 2027], index=1, key="pub_anio")
+        lista_anios_pub = [2025, 2026, 2027]
+        anio_sel_pub = st.selectbox("Año:", lista_anios_pub, index=1, key="pub_anio")
         
     mes_num_pub = meses.index(mes_sel_pub) + 1
     ocupacion_pub = obtener_ocupacion_mes(mes_num_pub, anio_sel_pub)
@@ -134,14 +137,14 @@ if es_version_publica:
     # Dibujar el calendario en la versión pública
     st.markdown(renderizar_calendario_html(anio_sel_pub, mes_num_pub, ocupacion_pub, mes_sel_pub), unsafe_allow_html=True)
     
-    # Simbologías informativas explicativas
+    # Simbologías informativas explicativas para la visualización del público externo
     st.markdown("""
     <div style="margin-top:20px; padding:15px; background-color:#f9fafb; border-radius:8px; border: 1px solid #e5e7eb;">
         <h4 style="margin-top:0; color:#374151;">ℹ️ Simbología del Calendario</h4>
         <p style="margin: 5px 0;"><span style="display:inline-block; width:20px; height:12px; background-color:#DEF7EC; border:1px solid #31C48D; margin-right:8px;"></span> <b>Fondo Verde / Círculo Verde:</b> Cabaña 1 Ocupada</p>
         <p style="margin: 5px 0;"><span style="display:inline-block; width:20px; height:12px; background-color:#EBF5FF; border:1px solid #3F83F8; margin-right:8px;"></span> <b>Fondo Azul / Círculo Azul:</b> Cabaña 2 Ocupada</p>
         <p style="margin: 5px 0;"><span style="display:inline-block; width:20px; height:12px; background: linear-gradient(135deg, #DEF7EC 50%, #EBF5FF 50%); border:1px solid #9ca3af; margin-right:8px;"></span> <b>Módulo Dividido Dual:</b> Ambas Cabañas Ocupadas el mismo día</p>
-        <p style="margin: 5px 0; color:#6b7280; font-size:12px;"><i>*Nota: Este panel está protegido contra modificaciones externas.</i></p>
+        <p style="margin: 5px 0; color:#6b7280; font-size:12px;"><i>*Nota: Este panel externo está protegido y no permite modificaciones de datos.</i></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -163,13 +166,12 @@ else:
                     st.rerun()
                 else:
                     st.error("Contraseña incorrecta. Por favor intente nuevamente.")
-        st.stop() # Frena la ejecución del resto de la página si no está validado
+        st.stop()
 
-    # Si pasa el bloqueo de contraseña, se despliega el panel administrativo original refinado
+    # Título oficial actualizado para comunicación interna
     st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🏡 Refugio Repalet - Control Financiero</h2>", unsafe_allow_html=True)
 
     # --- PANEL SUPERIOR: CONFIGURACIÓN DE TARIFAS Y FILTROS ---
     st.markdown("### ⚙️ Panel de Control")
     col_mes, col_anio, col_air, col_dir = st.columns(4)
 
-    meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
